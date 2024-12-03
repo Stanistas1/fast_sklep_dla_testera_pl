@@ -2,6 +2,7 @@ package pl.akademiaqa.tests;
 
 import com.microsoft.playwright.*;
 import org.junit.jupiter.api.*;
+import pl.akademiaqa.factory.BrowserFactory;
 import pl.akademiaqa.utils.Properties;
 
 import java.nio.file.Paths;
@@ -10,20 +11,21 @@ import java.time.format.DateTimeFormatter;
 
 import static pl.akademiaqa.utils.StringUtils.removeRoundBrackets;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class BaseTest {
 
-    private static Playwright pw;
-    protected static Browser browser;
+
+    private BrowserFactory browserFactory;
+    private Browser browser;
 
     protected BrowserContext browserContext;
     protected Page page;
 
     @BeforeAll
-    static void launchBrowser() {
-        pw = Playwright.create();
-        browser = pw.firefox().launch(new BrowserType.LaunchOptions()
-                .setHeadless(Boolean.parseBoolean(Properties.getProperty("browser.headless")))
-                .setSlowMo(Integer.valueOf(Properties.getProperty("browser.slow.mo"))));
+    void launchBrowser() throws IllegalAccessException {
+        browserFactory = new BrowserFactory();
+        browser = browserFactory.getBrowser();
+
     }
 
     @BeforeEach
@@ -54,9 +56,8 @@ public class BaseTest {
     }
 
     @AfterAll
-    static void closeBrowser() {
-
-        pw.close();
+    void closeBrowser() {
+        browserFactory.getPlaywright().close();
     }
 
     private boolean isTracingEnabled() {
