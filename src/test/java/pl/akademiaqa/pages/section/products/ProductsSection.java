@@ -2,18 +2,20 @@ package pl.akademiaqa.pages.section.products;
 
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
+import pl.akademiaqa.pages.BasePage;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ProductsSection {
+import static pl.akademiaqa.utils.StringUtils.toUTF8;
 
-    private Page page;
+public class ProductsSection extends BasePage {
+
     private List<Locator> products;
 
 
     public ProductsSection(Page page) {
-        this.page = page;
+        super(page);
         this.products = page.locator(".js-products").all();
     }
 
@@ -24,12 +26,13 @@ public class ProductsSection {
     public List<Double> getProductsPrices() {
         return getProductsPricesText()
                 .stream()
-                .map(p -> p.replaceAll("zł", ""))
+                .map(p -> p.replaceAll(toUTF8("zł"), ""))
                 .map(Double::parseDouble)
                 .collect(Collectors.toList());
     }
 
     public int getProductsCount() {
+
         return page.locator(".js-product").count();
     }
 }

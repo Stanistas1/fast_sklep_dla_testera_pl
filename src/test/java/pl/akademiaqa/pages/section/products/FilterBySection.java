@@ -2,18 +2,20 @@ package pl.akademiaqa.pages.section.products;
 
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
+import pl.akademiaqa.pages.BasePage;
 
 import java.util.Arrays;
 
-public class FilterBySection {
+import static pl.akademiaqa.utils.StringUtils.toUTF8;
 
-    private Page page;
+public class FilterBySection extends BasePage{
+
     private Locator leftSlider;
     private Locator priceLabel;
     private Locator mattPaper;
 
     public FilterBySection(Page page) {
-        this.page = page;
+        super(page);
         this.leftSlider = page.locator(".ui-slider-handle").first();
         this.priceLabel = page.locator("#search_filters li p");
         this.mattPaper = page.locator(".custom-checkbox").first();
@@ -47,7 +49,7 @@ public class FilterBySection {
     private double getFromPrice(){
         return Arrays.asList(page.locator("#search_filters li p").innerText().split(" "))
                 .stream()
-                .map(p -> p.replaceAll("zł", ""))
+                .map(p -> p.replaceAll(toUTF8("zł"), ""))
                 .map(Double::parseDouble)
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("Invalid price format"));
